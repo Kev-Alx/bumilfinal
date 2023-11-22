@@ -10,7 +10,7 @@ import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { Image } from "expo-image";
 import { Border, Color, FontFamily, FontSize } from "../../globalstyles";
 import useAuthAndData from "../../hooks/use-auth";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { useLocalProfile } from "../../lib/store";
 interface RouterProps {
   navigation: NavigationProp<any, any>;
@@ -18,21 +18,39 @@ interface RouterProps {
 const Profile = ({ navigation }: RouterProps) => {
   const { user, fireUser, fetchData } = useAuthAndData();
   const { age, height, setAge, setHeight } = useLocalProfile();
-  useEffect(() => {
-    const fetchDataAndSetState = async () => {
-      if (user) {
-        try {
-          const ff = await fetchData(user.uid);
-          setAge("" + ff?.age);
-          setHeight("" + ff?.height);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchDataAndSetState = async () => {
+  //     if (user) {
+  //       try {
+  //         const ff = await fetchData(user.uid);
+  //         setAge("" + ff?.age);
+  //         setHeight("" + ff?.height);
+  //       } catch (error) {
+  //         console.error("Error fetching data:", error);
+  //       }
+  //     }
+  //   };
 
-    fetchDataAndSetState();
-  }, [user]);
+  //   fetchDataAndSetState();
+  // }, [user]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchDataAndSetState = async () => {
+        if (user) {
+          try {
+            const ff = await fetchData(user.uid);
+            setAge("" + ff?.age);
+            setHeight("" + ff?.height);
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+      };
+
+      fetchDataAndSetState();
+    }, [user])
+  );
   return (
     <SafeAreaView style={styles.profile}>
       <View style={[styles.rectangleContainer, styles.rectangleLayout]}>

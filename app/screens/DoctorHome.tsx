@@ -13,7 +13,7 @@ import useAuthAndData, { FireUser } from "../../hooks/use-auth";
 import { useActivePatient } from "../../lib/store";
 import { Border, Color, FontFamily, FontSize } from "../../globalstyles";
 import { Image } from "expo-image";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import PatientCard from "./components/PatientCard";
 interface RouterProps {
@@ -24,19 +24,38 @@ const DoctorHome = ({ navigation }: RouterProps) => {
   const [refferalCode, setRefferalCode] = useState("");
   const [patients, setPatients] = useState<FireUser[]>([]);
   const { connectRefferal, getPatients } = useFireUser();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (user) {
-          const patients = await getPatients(user);
-          setPatients(patients as FireUser[]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       if (user) {
+  //         const patients = await getPatients(user);
+  //         console.log("lo");
+  //         setPatients(patients as FireUser[]);
+  //       }
+  //     } catch (error) {
+  //       // console.error("Error fetching patients:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [user]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          if (user) {
+            const patients = await getPatients(user);
+            console.log("lo");
+            setPatients(patients as FireUser[]);
+          }
+        } catch (error) {
+          // console.error("Error fetching patients:", error);
         }
-      } catch (error) {
-        // console.error("Error fetching patients:", error);
-      }
-    };
-    fetchData();
-  }, [user]);
+      };
+      fetchData();
+    }, [user])
+  );
+
   const handleRef = async () => {
     if (user) {
       await connectRefferal(user, { refferalCode: refferalCode });

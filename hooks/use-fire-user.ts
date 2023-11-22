@@ -27,8 +27,10 @@ type FireuserReqDoc = {
   yearsOfExperience: number;
   profilePicUrl?: string;
 };
-
-type FireUserReq = FireuserReqProfile | FireuserReqDoc;
+type DeletePatientReq = {
+  doctorId: string;
+};
+type FireUserReq = FireuserReqProfile | FireuserReqDoc | DeletePatientReq;
 
 const useFireUser = () => {
   const { user } = useAuthAndData();

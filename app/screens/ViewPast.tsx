@@ -21,14 +21,15 @@ import { format } from "date-fns";
 import { calculateDaysDifference } from "../../lib/utils";
 import ConsultCard from "./components/ConsultCard";
 import { Ionicons } from "@expo/vector-icons";
+import useFireUser from "../../hooks/use-fire-user";
 interface RouterProps {
   navigation: NavigationProp<any, any>;
 }
 const ViewPast = ({ navigation }: RouterProps) => {
-  const { activePatient } = useActivePatient();
-
+  const { activePatient, setActivePatient } = useActivePatient();
   const [consultation, setConsultation] = useState<Consultation[]>([]);
   const { getConsultationsPatient, isLoading } = useConsultation();
+  const { updateFireUser } = useFireUser();
   useEffect(() => {
     const fetchData = async () => {
       if (activePatient !== null) {
@@ -40,7 +41,7 @@ const ViewPast = ({ navigation }: RouterProps) => {
           const consult = await getConsultationsPatient(activePatient?.id);
 
           setConsultation(consult as Consultation[]);
-          console.log(activePatient);
+          // console.log(activePatient);
         } catch (error) {
           console.error("Error fetching schedules:", error);
         }
@@ -48,6 +49,14 @@ const ViewPast = ({ navigation }: RouterProps) => {
     };
     fetchData();
   }, [activePatient]);
+
+  const deleteDoc = () => {
+    updateFireUser(activePatient?.id || "", {
+      doctorId: "",
+    });
+    setActivePatient(null);
+    navigation.navigate("DoctorHomeIndex");
+  };
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -202,7 +211,7 @@ const ViewPast = ({ navigation }: RouterProps) => {
                     backgroundColor: Color.colorLightcoral,
                   },
                 ]}
-                onPress={() => console.log("hi")}
+                onPress={deleteDoc}
               >
                 <Text
                   style={{
