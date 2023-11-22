@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -9,14 +9,35 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { NavigationProp } from "@react-navigation/native";
+import useAuthAndData, { FireUser } from "../../hooks/use-auth";
+import useFireUser from "../../hooks/use-fire-user";
 interface RouterProps {
   navigation: NavigationProp<any, any>;
 }
 const Chat = ({ navigation }: RouterProps) => {
-  const [nomorHp, setNomorHp] = useState("");
   const [Pesan, setPesan] = useState("");
+  const [doctor, setdoctor] = useState<FireUser>();
+  const { fireUser } = useAuthAndData();
+  const { getContactDoc } = useFireUser();
+  useEffect(() => {
+    const fetchData = async () => {
+      if (fireUser !== null) {
+        try {
+          const doc = await getContactDoc(fireUser);
+          if (!doc) {
+            alert("User tidak punya dokter!");
+            return;
+          }
+          setdoctor(doc[0] as FireUser);
+        } catch (error) {
+          console.error("Error fetching schedules:", error);
+        }
+      }
+    };
+    fetchData();
+  }, [fireUser]);
   const kirimPesan = () => {
-    let url = "whatsapp://send?text=" + Pesan + "&phone=" + nomorHp;
+    let url = "whatsapp://send?text=" + Pesan + "&phone=" + doctor?.phoneNumber;
     Linking.openURL(url)
       .then((data) => {
         console.log("WhatsApp terbuka");
@@ -27,9 +48,21 @@ const Chat = ({ navigation }: RouterProps) => {
   };
   return (
     <View style={styles.chat}>
+      <Image
+        style={{
+          width: "100%",
+          height: "100%",
+          bottom: 0,
+          position: "absolute",
+        }}
+        contentFit="cover"
+        source={require("../../assets/background-molang.png")}
+      />
       <View style={[styles.frame, styles.frameLayout]}>
         <View style={[styles.frame1, styles.frameIconPosition]}>
-          <Text style={[styles.bumilNo1, styles.sendFlexBox]}>Bumil no 1</Text>
+          <Text style={[styles.bumilNo1, styles.sendFlexBox]}>
+            {fireUser?.displayName}
+          </Text>
           <Text style={[styles.viewPastConsultations, styles.sendFlexBox]}>
             Contact your doctor
           </Text>
@@ -38,6 +71,7 @@ const Chat = ({ navigation }: RouterProps) => {
               style={[
                 styles.arrowSmLeftSvgrepocomIcon,
                 styles.frameIconPosition,
+                { top: 6 },
               ]}
               contentFit="cover"
               source={require("../../assets/Contact/arrowsmleft-svgrepocom.png")}
@@ -45,26 +79,24 @@ const Chat = ({ navigation }: RouterProps) => {
           </Pressable>
         </View>
       </View>
+
       <View style={[styles.frameWrapper, styles.wrapperLayout]}>
         <View style={[styles.frame2, styles.frameIconPosition]}>
           <View style={[styles.frameChild, styles.groupIconLayout]} />
 
           <View style={[styles.frame3, styles.frame3Layout]}>
-            <Text style={[styles.drBambangS, styles.textClr]}>{`Dr. Bambang 
-S. Sp.OG`}</Text>
+            <Text style={[styles.drBambangS, styles.textClr]}>
+              {doctor?.displayName}
+            </Text>
             <Image
               style={[styles.image26Icon, styles.frame3Layout]}
               contentFit="cover"
-              source={require("../../assets/Contact/image-26.png")}
+              source={{ uri: doctor?.profilePicUrl }}
             />
             <View style={[styles.parent, styles.textLayout]}>
-              <TextInput
-                style={[styles.text, styles.textLayout]}
-                placeholder="NO"
-                keyboardType="numeric"
-                value={nomorHp}
-                onChangeText={(nomorHp) => setNomorHp(nomorHp)}
-              />
+              <Text style={[styles.text, styles.textLayout]}>
+                {doctor?.phoneNumber}
+              </Text>
               <Image
                 style={[styles.frameItem, styles.framePosition]}
                 contentFit="cover"
@@ -74,9 +106,10 @@ S. Sp.OG`}</Text>
           </View>
         </View>
       </View>
+
       <View style={[styles.sendWrapper, styles.wrapperLayout]}>
         <Pressable onPress={kirimPesan}>
-          <Text style={[styles.send, styles.sendFlexBox]}>SEND</Text>
+          <Text style={[styles.send, styles.sendFlexBox]}>Send</Text>
         </Pressable>
       </View>
       <TextInput
@@ -87,6 +120,7 @@ S. Sp.OG`}</Text>
           fontSize: 15,
           marginBottom: 15,
           textAlignVertical: "top",
+          padding: 8,
         }}
         placeholder="Masukkan Pesan"
         value={Pesan}
@@ -109,13 +143,13 @@ const styles = StyleSheet.create({
     left: 0,
   },
   sendFlexBox: {
-    textAlign: "left",
+    textAlign: "center",
     position: "absolute",
   },
   wrapperLayout: {
-    width: 286,
+    width: "80%",
     borderRadius: 8,
-    left: 55,
+    alignSelf: "center",
     position: "absolute",
   },
   groupIconLayout: {
@@ -128,10 +162,10 @@ const styles = StyleSheet.create({
   },
   textClr: {
     color: "#020617",
-    top: 0,
+    top: 6,
   },
   textLayout: {
-    height: 13,
+    height: 19,
     position: "absolute",
   },
   framePosition: {
@@ -150,7 +184,7 @@ const styles = StyleSheet.create({
   viewPastConsultations: {
     top: 12,
     left: 42,
-    fontSize: 12,
+    fontSize: 14,
     color: "#fda4af",
     fontFamily: "Montserrat-Bold",
     fontWeight: "700",
@@ -178,7 +212,7 @@ const styles = StyleSheet.create({
   frameChild: {
     top: 49,
     borderTopWidth: 0.5,
-    width: 287,
+    width: "100%",
     borderColor: "#3e071d",
     borderStyle: "solid",
     left: 0,
@@ -200,18 +234,15 @@ const styles = StyleSheet.create({
   },
   text: {
     left: 8,
-    fontSize: 10,
-    fontWeight: "500",
+    fontSize: 12,
     fontFamily: "Inter-Medium",
     textAlign: "center",
-    width: 80,
+    width: 108,
     color: "#020617",
-    top: 0,
   },
   frameItem: {
-    height: "96.15%",
-    width: "14.13%",
-    top: "0%",
+    height: 20,
+    width: 20,
     right: "85.87%",
     bottom: "3.85%",
     left: "-10%",
@@ -219,19 +250,19 @@ const styles = StyleSheet.create({
     maxHeight: "100%",
   },
   parent: {
-    top: 14,
+    top: 8,
     left: 177,
     width: 92,
   },
   frame3: {
     top: 8,
     left: 13,
-    width: 269,
+    width: "100%",
     overflow: "hidden",
   },
   frame2: {
     backgroundColor: "#fecdd3",
-    width: 296,
+    width: "100%",
     height: 49,
     left: 0,
     position: "absolute",
@@ -251,13 +282,12 @@ const styles = StyleSheet.create({
   },
   send: {
     top: 11,
-    left: 117,
     fontSize: 16,
     color: "#fff1f2",
-    width: 53,
+    width: "100%",
+    alignSelf: "center",
     fontFamily: "Montserrat-Bold",
-    fontWeight: "700",
-    textAlign: "left",
+    textAlign: "center",
   },
   sendWrapper: {
     top: 341,

@@ -21,6 +21,7 @@ export const Color = {
   colorMistyrose_100: "#fed2d1",
   colorMistyrose_200: "#ffe4e6",
   colorDarkslateblue: "#172554",
+  colorDarkSlateBlueOpaque: "rgba(23, 37, 84, 0.4)",
   colorLightblue: "#cfecfe",
   colorWhite: "#fff",
   colorGray_100: "#fafafa",

@@ -10,7 +10,15 @@ const HomeNoDoct = () => {
   const { fireUser, user } = useAuthAndData();
   const { getDoctor } = useFireUser();
   const [doctors, setDoctors] = useState<FireUser[]>([]);
-
+  const [search, setSearch] = useState("");
+  const [filteredDoct, setfilteredDoct] = useState<FireUser[]>([]);
+  useEffect(() => {
+    setfilteredDoct(
+      doctors.filter((guide) =>
+        guide.displayName.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search, doctors]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,6 +58,8 @@ const HomeNoDoct = () => {
           <TextInput
             style={styles.searchForA}
             placeholder="Search for a doctor"
+            value={search}
+            onChangeText={(e) => setSearch(e)}
           ></TextInput>
         </View>
         <Image
@@ -69,7 +79,7 @@ const HomeNoDoct = () => {
       <ScrollView style={styles.lebar}>
         <View>
           <ScrollView alwaysBounceVertical={true} style={styles.container}>
-            {doctors.map((doct) => (
+            {filteredDoct.map((doct) => (
               <Doctorcard
                 key={doct.id}
                 hospital={doct.hospital || ""}
@@ -435,12 +445,11 @@ const styles = StyleSheet.create({
   },
   searchForA: {
     left: 35,
-    color: "#d9d9d9",
+    color: Color.colorDarkslateblue,
     width: "100%",
     height: "100%",
     fontSize: FontSize.size_sm,
     fontFamily: FontFamily.interSemiBold,
-    fontWeight: "600",
     textAlign: "left",
     position: "absolute",
   },

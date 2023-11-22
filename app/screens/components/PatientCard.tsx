@@ -65,7 +65,8 @@ const PatientCard = ({ patient, nav }: PatientCardProps) => {
       <TouchableOpacity
         style={styles.pinkBox}
         onPress={() => {
-          console.log("Oke bisa");
+          setActivePatient(patient);
+          nav.navigate("ViewPast");
         }}
       >
         <Image

@@ -7,12 +7,14 @@ import { Color, FontFamily, FontSize, Border } from "../../globalstyles";
 const Guide = ({ route, navigation }: any) => {
   const params = route.params;
   const { content, title, url } = params.guide;
+  const paragraphs = content.split("/n/n");
+
   return (
     <>
       <ParallaxScrollView
         backgroundColor={"#fed2d1"}
         style={{ flex: 1 }}
-        parallaxHeaderHeight={220}
+        parallaxHeaderHeight={190}
         renderBackground={() => (
           <Image
             style={{ width: "100%", height: "100%" }}
@@ -30,9 +32,30 @@ const Guide = ({ route, navigation }: any) => {
               source={require("../../assets/back-arrow.png")}
             />
           </TouchableOpacity>
-          <Text style={styles.foodsToReduce}>{title}sdadadasdadasdasd</Text>
+          <Text style={styles.foodsToReduce}>{title}</Text>
           <View>
-            <Text style={[styles.loremTypo]}>{content}</Text>
+            {/* <Text style={[styles.loremTypo]}>{content}</Text> */}
+            {paragraphs.map(
+              (
+                paragraph:
+                  | string
+                  | number
+                  | boolean
+                  | React.ReactElement<
+                      any,
+                      string | React.JSXElementConstructor<any>
+                    >
+                  | Iterable<React.ReactNode>
+                  | React.ReactPortal
+                  | null
+                  | undefined,
+                index: React.Key | null | undefined
+              ) => (
+                <Text style={[styles.loremTypo]} key={index}>
+                  {paragraph}
+                </Text>
+              )
+            )}
             {/* 
             <Text style={[styles.loremTypo]}>
               Lorem ipsum dolor sit amet consectetur. Et ut senectus quisque
@@ -63,7 +86,7 @@ const styles = StyleSheet.create({
   guide: {
     backgroundColor: "#fed2d1",
     width: "100%",
-    height: 900,
+    // height: 1200,
     // overflow: "hidden",
   },
   foodsToReduce: {
@@ -80,9 +103,8 @@ const styles = StyleSheet.create({
     marginTop: 28,
     color: Color.colorDarkslateblue,
     fontFamily: FontFamily.interMedium,
-    fontWeight: "500",
     fontSize: FontSize.size_base,
-    width: 260,
+    width: 280,
     textAlign: "justify",
     left: 60,
   },

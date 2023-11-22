@@ -32,6 +32,9 @@ const EditProfile = ({ navigation }: RouterProps) => {
   const handleSave = () => {
     sa(age);
     sh(height);
+    if (!displayName) {
+      alert("Username must be filled!");
+    }
     updateFireUser(user?.uid || "", {
       age: +age,
       height: +height,

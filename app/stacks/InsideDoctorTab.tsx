@@ -9,6 +9,7 @@ import { Color } from "../../globalstyles";
 import AddNewEntry from "../screens/AddNewEntry";
 import DoctorHomeStack from "./DoctorHomeStack";
 import Coba from "../screens/AddNewEntry";
+import ProfileStack from "./ProfileStack";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -54,8 +55,8 @@ export function CompletedLayout() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="ProfileStack"
+        component={ProfileStack}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => (

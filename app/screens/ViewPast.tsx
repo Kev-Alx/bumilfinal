@@ -6,44 +6,247 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
+  Modal,
 } from "react-native";
 import { Image } from "expo-image";
 import { Color, FontFamily, FontSize, Border } from "../../globalstyles";
+import { NavigationProp } from "@react-navigation/native";
+import { useActivePatient } from "../../lib/store";
+import useConsultation, { Consultation } from "../../hooks/use-consultation";
+import { useEffect, useState } from "react";
+import useAuthAndData from "../../hooks/use-auth";
+import { Timestamp } from "firebase/firestore";
+import { format } from "date-fns";
+import { calculateDaysDifference } from "../../lib/utils";
+import ConsultCard from "./components/ConsultCard";
+import { Ionicons } from "@expo/vector-icons";
+interface RouterProps {
+  navigation: NavigationProp<any, any>;
+}
+const ViewPast = ({ navigation }: RouterProps) => {
+  const { activePatient } = useActivePatient();
 
-const ViewPast = () => {
+  const [consultation, setConsultation] = useState<Consultation[]>([]);
+  const { getConsultationsPatient, isLoading } = useConsultation();
+  useEffect(() => {
+    const fetchData = async () => {
+      if (activePatient !== null) {
+        try {
+          // const schedules = await getSchedules(user);
+          // setSchedule(schedules as Schedule[]);
+          // const consult = await getConsultations(user);
+          // setConsultation(consult as Consultation[]);
+          const consult = await getConsultationsPatient(activePatient?.id);
+
+          setConsultation(consult as Consultation[]);
+          console.log(activePatient);
+        } catch (error) {
+          console.error("Error fetching schedules:", error);
+        }
+      }
+    };
+    fetchData();
+  }, [activePatient]);
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={[styles.homeScreen]}>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("DoctorHomeIndex")}
+        style={{
+          top: 65,
+          left: 24,
+          width: 22,
+          height: 20,
+          position: "absolute",
+          overflow: "hidden",
+        }}
+      >
         <Image
           style={styles.arrowSmLeftSvgrepocomIcon}
           contentFit="cover"
           source={require("../../assets/back-arrow.png")}
         />
       </TouchableOpacity>
-      <Text style={styles.yourConsultation}>Your consultation</Text>
-      <Text style={styles.bumil}>Bumil No 1</Text>
-
+      <Text style={styles.yourConsultation}>View past consultations on </Text>
+      <Text style={styles.bumil}>{activePatient?.displayName}</Text>
+      <TouchableOpacity
+        onPress={openModal}
+        style={{
+          top: 65,
+          left: 330,
+          width: 24,
+          height: 24,
+          position: "absolute",
+          overflow: "hidden",
+        }}
+      >
+        <Ionicons name="trash-outline" size={24} color={Color.colorCrimson} />
+      </TouchableOpacity>
       {/* Garis  */}
       <View style={[styles.addANewEntryItem, styles.addBorder]} />
+
       <SafeAreaView>
         <ScrollView style={styles.details}>
-          <Text style={{ height: 40, width: 200, backgroundColor: "red" }}>
-            hihihi
-          </Text>
+          <ScrollView alwaysBounceVertical={true} style={styles.container}>
+            {isLoading ? (
+              <ActivityIndicator
+                size={"large"}
+                color={Color.colorCrimson}
+                style={{ marginTop: 24, marginLeft: 150 }}
+              />
+            ) : consultation.length > 0 ? (
+              consultation.map((con) => {
+                const unknownType: unknown = con.date;
+                const tanggalTimestamp = unknownType as Timestamp;
+                const dateObjectz = tanggalTimestamp.toDate();
+                const formatDate = format(dateObjectz, "EEEE, dd MMM yyyy");
+                const diff = calculateDaysDifference(dateObjectz, new Date());
+                // console.log(diff);
+
+                return (
+                  <ConsultCard
+                    bloodPressure={con.bloodPressure}
+                    weight={con.weight}
+                    date={formatDate + ""}
+                    key={"" + con.createdAt}
+                    diff={diff}
+                    type={con.type as "WARN" | "GOOD" | "NOTE"}
+                    consultation={con}
+                    nav={navigation}
+                  />
+                );
+              })
+            ) : (
+              <Text
+                style={{
+                  left: 24,
+                  // position: "absolute",
+                  fontSize: FontSize.size_lg,
+                  fontFamily: FontFamily.interBold,
+                  color: Color.colorLightcoral,
+                  width: "80%",
+                }}
+              >
+                There are no consultations for this patient.
+              </Text>
+            )}
+          </ScrollView>
         </ScrollView>
       </SafeAreaView>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text
+              style={{
+                fontSize: FontSize.size_xxl,
+                fontFamily: FontFamily.montserratBold,
+                color: Color.colorLightcoral,
+              }}
+            >
+              Finished with patient?
+            </Text>
+            <View
+              style={[styles.addBorder, { width: "102.8%", top: 55, right: 0 }]}
+            />
+            <Text
+              style={{
+                fontSize: FontSize.size_base,
+                fontFamily: FontFamily.interMedium,
+                color: Color.colorDarkslateblue,
+                marginTop: 8,
+              }}
+            >
+              Proceed with caution! Actions cannot be undone, deleting will
+              remove patient from your patients list.
+            </Text>
+            <View style={{ flexDirection: "row", width: "92%" }}>
+              <TouchableOpacity
+                style={[
+                  styles.kxcust,
+                  {
+                    backgroundColor: Color.colorSnow,
+                  },
+                ]}
+                onPress={closeModal}
+              >
+                <Text
+                  style={{
+                    fontSize: FontSize.size_base,
+                    fontFamily: FontFamily.montserratSemiBold,
+                    color: Color.colorDarkslateblue,
+                  }}
+                >
+                  Nevermind
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.kxcust,
+                  {
+                    backgroundColor: Color.colorLightcoral,
+                  },
+                ]}
+                onPress={() => console.log("hi")}
+              >
+                <Text
+                  style={{
+                    fontSize: FontSize.size_base,
+                    fontFamily: FontFamily.montserratSemiBold,
+                    color: Color.colorSnow,
+                  }}
+                >
+                  Yes, delete
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  kxcust: {
+    flex: 1,
+    padding: 8,
+    borderRadius: 4,
+    margin: 4,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Color.colorDarkSlateBlueOpaque,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
   details: {
     top: 150,
   },
   container: {
     flex: 1,
     flexDirection: "row",
-    top: 50,
     marginLeft: 20,
     marginBottom: 190,
   },
@@ -55,31 +258,25 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   arrowSmLeftSvgrepocomIcon: {
-    top: 50,
-    left: 18,
-    width: 40,
-    height: 40,
-    position: "absolute",
-    overflow: "hidden",
+    width: 22,
+    height: 18,
   },
   yourConsultation: {
     top: 62,
     fontFamily: FontFamily.montserratBold,
-    color: Color.colorLightpink,
+    color: Color.colorCrimson,
     textAlign: "left",
-    fontWeight: "700",
-    fontSize: FontSize.size_xs,
+    fontSize: FontSize.size_sm,
     left: 62,
     position: "absolute",
   },
   bumil: {
     top: 80,
     fontSize: 32,
-    color: Color.colorLightcoral,
+    color: Color.colorCrimson,
     width: 252,
-    fontFamily: FontFamily.interBold,
+    fontFamily: FontFamily.montserratBold,
     textAlign: "left",
-    fontWeight: "700",
     left: 62,
     position: "absolute",
   },
@@ -100,8 +297,8 @@ const styles = StyleSheet.create({
     left: 50,
   },
   addANewEntryItem: {
-    top: 135,
-    width: 280,
+    top: 125,
+    width: "80%",
     left: 47,
   },
 });

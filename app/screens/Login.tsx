@@ -25,8 +25,8 @@ const Login = () => {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
-      console.log(error);
-      alert("Registration failed: " + error.message);
+      // console.log(error);
+      alert("Login failed: " + error.message);
     } finally {
       setisLoading(false);
     }

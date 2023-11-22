@@ -30,6 +30,7 @@ const AddSchedule = ({ navigation }: RouterProps) => {
   const { activePatient } = useActivePatient();
   const handleSchedule = () => {
     if (!mood) {
+      alert("Make sure all the fields are filled!");
       return;
     }
     if (user) {

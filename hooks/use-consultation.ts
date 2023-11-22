@@ -19,8 +19,6 @@ export type Consultation = {
   type: string;
   photoDesc?: string;
   weight: string;
-  urineTest?: JSON;
-  bloodTest?: JSON;
   userId?: string;
   createdAt?: Date;
   testNoteBlood?: string;
@@ -79,10 +77,43 @@ const useConsultation = () => {
       setIsLoading(false);
     }
   };
+
+  const getConsultationsPatient = async (userId: string) => {
+    setIsLoading(true);
+    // console.log(user?.uid);
+    try {
+      const qs = await getDocs(
+        query(collection(db, "users"), where("id", "==", userId))
+      );
+      if (!qs.empty) {
+        const userData = qs.docs[0].data();
+        // console.log(userData);
+        const querySnapshot = await getDocs(
+          query(
+            collection(db, "consultation"),
+            where("userId", "==", userData.id),
+            orderBy("createdAt")
+          )
+        );
+        const newList: Consultation[] = querySnapshot.docs.map(
+          (doc) => doc.data() as Consultation
+        );
+        // console.log("copium", newList.length);
+
+        return newList;
+      }
+    } catch (error) {
+      console.error("Error fetching consultations:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     getConsultations,
     addConsultation,
     isLoading,
+    getConsultationsPatient,
   };
 };
 

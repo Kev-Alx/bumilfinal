@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ScheduleCard } from "./components/ScheduleCard";
 import ConsultCard from "./components/ConsultCard";
 import { Border, Color, FontFamily, FontSize } from "../../globalstyles";
@@ -17,10 +17,7 @@ import { format } from "date-fns";
 import useConsultation, { Consultation } from "../../hooks/use-consultation";
 import { Timestamp } from "firebase/firestore";
 import { calculateDaysDifference } from "../../lib/utils";
-import { useNavigation } from "@react-navigation/native";
-import Contact from "./Contact";
 import { NavigationProp } from "@react-navigation/native";
-
 const variantMap = {
   CONSULT: "BLUE",
   URINE: "GREEN",
@@ -41,6 +38,7 @@ const HomeScreen = ({ navigation }: RouterProps) => {
   const [consultation, setConsultation] = useState<Consultation[]>([]);
   const { getSchedules, isLoading } = useSchedule();
   const { getConsultations, isLoading: constLoading } = useConsultation();
+
   useEffect(() => {
     const fetchData = async () => {
       if (user !== null) {
@@ -62,6 +60,7 @@ const HomeScreen = ({ navigation }: RouterProps) => {
     };
     fetchData();
   }, [user]);
+
   return (
     <View style={styles.homeScreen}>
       <View style={styles.homeScreenChild} />
@@ -150,7 +149,7 @@ const HomeScreen = ({ navigation }: RouterProps) => {
       {/* emergency */}
       <View style={[styles.rectangleParent1, styles.frameViewLayout]}>
         <TouchableOpacity
-          onPress={() => console.log("Pressed")}
+          onPress={() => navigation.navigate("Emergency")}
           activeOpacity={0.6}
         >
           <View style={[styles.frameChild2, styles.frameChildBorder]} />
@@ -179,7 +178,6 @@ const HomeScreen = ({ navigation }: RouterProps) => {
       <Text style={[styles.myConsultations, styles.hiBumilTypo]}>
         My Consultations
       </Text>
-
       <ScrollView alwaysBounceVertical={true} style={styles.container}>
         <ScrollView>
           {constLoading ? (
@@ -204,6 +202,8 @@ const HomeScreen = ({ navigation }: RouterProps) => {
                   key={"" + con.createdAt}
                   diff={diff}
                   type={con.type as "WARN" | "GOOD" | "NOTE"}
+                  consultation={con}
+                  nav={navigation}
                 />
               );
             })

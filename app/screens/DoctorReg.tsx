@@ -17,7 +17,7 @@ interface RouterProps {
   navigation: NavigationProp<any, any>;
 }
 const DoctorReg = ({ navigation }: RouterProps) => {
-  console.log("hireg");
+  // console.log("hireg");
   const { user, fireUser } = useAuthAndData();
   const [hospital, setHospital] = useState("");
   const [phoneNo, setPhoneNo] = useState("62");

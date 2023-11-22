@@ -36,9 +36,10 @@ const TestResults = ({ route, navigation }: RouterProps) => {
   const dateField = route.params?.date as string;
   const dateObject = new Date(dateField);
   const handleReg = async () => {
-    if (!URL || !URLUrine) {
-      return;
-    }
+    // if (!URL || !URLUrine) {
+    //   console.log("hi");
+    //   return;
+    // }
     await addConsultation({
       testNoteBlood,
       testNoteUrine,

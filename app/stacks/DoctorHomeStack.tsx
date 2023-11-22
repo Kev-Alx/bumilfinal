@@ -4,6 +4,8 @@ import AddSchedule from "../screens/AddSchedule";
 import AddNewEntry from "../screens/AddNewEntry";
 import TestResults from "../screens/AddTestResults";
 import ViewPast from "../screens/ViewPast";
+import ConsultationDetails from "../screens/ConsultationDetails";
+import ViewTestResults from "../screens/ViewTestRssults";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +17,11 @@ export default function DoctorHomeStack() {
       <Stack.Screen name="AddConsultation" component={AddNewEntry} />
       <Stack.Screen name="AddTestResult" component={TestResults} />
       <Stack.Screen name="ViewPast" component={ViewPast} />
+      <Stack.Screen
+        name="ConsultationDetails"
+        component={ConsultationDetails}
+      />
+      <Stack.Screen name="ViewTestResults" component={ViewTestResults} />
     </Stack.Navigator>
   );
 }

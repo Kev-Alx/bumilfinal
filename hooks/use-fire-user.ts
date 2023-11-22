@@ -94,7 +94,7 @@ const useFireUser = () => {
     }
   };
 
-  const getDoctor = async (user: User) => {
+  const getContactDoc = async (user: FireUser) => {
     setIsLoading(true);
     // console.log(user?.uid);
     if (!user) {
@@ -102,6 +102,33 @@ const useFireUser = () => {
       return [];
     }
 
+    try {
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "users"),
+          where("id", "==", user.doctorId),
+          orderBy("displayName")
+        )
+      );
+
+      const newList: FireUser[] = querySnapshot.docs.map(
+        (doc) => doc.data() as FireUser
+      );
+      return newList;
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getDoctor = async (user: User) => {
+    setIsLoading(true);
+    // console.log(user?.uid);
+    if (!user) {
+      // Handle the case where user is undefined or null
+      return [];
+    }
     try {
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("role", "==", "DOCTOR"))
@@ -124,6 +151,7 @@ const useFireUser = () => {
     connectRefferal,
     getDoctor,
     getPatients,
+    getContactDoc,
   };
 };
 

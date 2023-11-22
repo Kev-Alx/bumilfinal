@@ -161,15 +161,13 @@ const styles = StyleSheet.create({
   },
   yearsTypo: {
     top: 52,
-    textAlign: "center",
     fontFamily: FontFamily.interMedium,
-    fontWeight: "500",
     fontSize: FontSize.size_3xs,
     color: Color.colorGray_300,
   },
   years: {
-    width: 48,
-    left: 25,
+    width: 64,
+    left: 30,
   },
   textTypo: {
     textAlign: "left",

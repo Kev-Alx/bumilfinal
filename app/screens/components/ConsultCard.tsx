@@ -1,13 +1,22 @@
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableHighlight,
+} from "react-native";
 import { Image } from "expo-image";
 import React from "react";
 import { Color, Border, FontFamily, FontSize } from "../../../globalstyles";
+import { Consultation } from "../../../hooks/use-consultation";
 type ConsultCardProps = {
   date: string;
   weight: string;
   bloodPressure: string;
   diff: number;
   type: "WARN" | "GOOD" | "NOTE";
+  consultation: Consultation;
+  nav?: any;
 };
 
 const textMap = {
@@ -22,6 +31,8 @@ const ConsultCard = ({
   date,
   diff,
   type,
+  consultation,
+  nav,
 }: ConsultCardProps) => {
   return (
     <View style={styles.consults1}>
@@ -31,6 +42,23 @@ const ConsultCard = ({
         {diff} DAYS AGO
       </Text>
       <View style={[styles.consultsChild2, styles.consultsChildPosition]} />
+      <TouchableHighlight
+        underlayColor={Color.colorSnow}
+        style={[
+          styles.consultsChild2,
+          {
+            zIndex: 9,
+            height: "100%",
+            position: "absolute",
+            right: 0,
+            opacity: 0.5,
+            width: 120,
+          },
+        ]}
+        onPress={() => nav.navigate("ConsultationDetails", { consultation })}
+      >
+        <View></View>
+      </TouchableHighlight>
       <Text style={[styles.mmhg, styles.mmhgTypo]}>
         <Text style={styles.text}>{bloodPressure}</Text>
         <Text style={styles.mmhg1}>mmHg</Text>

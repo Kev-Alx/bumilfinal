@@ -36,6 +36,15 @@ const GuideHome = ({ navigation }: RouterProps) => {
   const [guides, setGuides] = useState<Guide[]>([]);
   const [isLoading, setisLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [filteredGuides, setfilteredGuides] = useState<Guide[]>([]);
+
+  useEffect(() => {
+    setfilteredGuides(
+      guides.filter((guide) =>
+        guide.title.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search, guides]);
 
   const getGuides = async () => {
     setisLoading(true);
@@ -56,11 +65,6 @@ const GuideHome = ({ navigation }: RouterProps) => {
   //   setGuides(filteredGuides);
   // }, [search]);
 
-  const filterGuides = (guides: Guide[], searchTerm: string) => {
-    return guides.filter((guide) =>
-      guide.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
   useEffect(() => {
     getGuides();
   }, []);
@@ -90,7 +94,7 @@ const GuideHome = ({ navigation }: RouterProps) => {
           {isLoading ? (
             <ActivityIndicator />
           ) : (
-            guides.map((guide) => (
+            filteredGuides.map((guide) => (
               <GuideCard
                 key={guide.url}
                 category={guide.category}

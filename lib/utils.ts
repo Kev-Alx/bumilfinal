@@ -1,7 +1,7 @@
 export function generateRandomString(key: string): string {
-  const length: number = 8;
+  const length: number = 5;
   const characters: string =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    "abcdefghjkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
   let randomString: string = "";
 
   for (let i = 0; i < length; i++) {

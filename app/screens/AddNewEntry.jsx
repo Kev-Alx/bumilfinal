@@ -28,6 +28,7 @@ const Coba = ({ navigation }) => {
   const handleReg = async () => {
     if (!weight || !bloodPressure || !description || !URL || !user) {
       // console.log("no");
+      alert("Make sure all the fields are filled!")
       return;
     }
     let wodeType = type;
