@@ -23,7 +23,9 @@ interface RouterProps {
 const TestResults = ({ route, navigation }: RouterProps) => {
   const { addConsultation } = useConsultation();
   const { activePatient } = useActivePatient();
-  const [testNoteBlood, setTestNoteBlood] = useState("");
+  const [testNoteBlood, setTestNoteBlood] = useState(
+    "Hasil test lab masih di standar normal. Tetap jaga pola makan serta atur aktivitas dengan baik."
+  );
   const [testNoteUrine, setTestNoteUrine] = useState("");
   const { isCheckblood, isCheckurine } = route.params as any;
 

@@ -19,9 +19,9 @@ interface RouterProps {
 const DoctorReg = ({ navigation }: RouterProps) => {
   // console.log("hireg");
   const { user, fireUser } = useAuthAndData();
-  const [hospital, setHospital] = useState("");
-  const [phoneNo, setPhoneNo] = useState("62");
-  const [yearsExp, setYearsExp] = useState("");
+  const [hospital, setHospital] = useState("RS Darmo");
+  const [phoneNo, setPhoneNo] = useState("6281233734356");
+  const [yearsExp, setYearsExp] = useState("4");
   const { updateFireUser } = useFireUser();
   const { pickImage, URL } = useImageUploader([3, 4]);
 

@@ -1,14 +1,13 @@
 export function generateRandomString(key: string): string {
   const length: number = 5;
   const characters: string =
-    "abcdefghjkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    "abcdefghjkmnopqrstuvwxyzABCDEFGHJKMNOPQRSTUVWXYZ1234567890";
   let randomString: string = "";
 
   for (let i = 0; i < length; i++) {
     const randomIndex: number = Math.floor(Math.random() * characters.length);
     randomString += characters.charAt(randomIndex);
   }
-  randomString += key;
   return randomString;
 }
 export const calculateDaysDifference = (date1: Date, date2: Date): number => {

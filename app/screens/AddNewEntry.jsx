@@ -17,9 +17,13 @@ const Coba = ({ navigation }) => {
   const [isCheckblood, setCheckblood] = useState(false);
   const [isCheckurine, setCheckurine] = useState(false);
   const [weight, setWeight] = useState("");
-  const [bloodPressure, setBloodPressure] = useState("");
-  const [description, setDescription] = useState("");
-  const [notes, setNotes] = useState("");
+  const [bloodPressure, setBloodPressure] = useState("120/70");
+  const [description, setDescription] = useState(
+    "Pertumbuhan janin sudah tergolong baik. Detak jantung teratur. Sejauh ini tidak ada potensi masalah kesehatan atau kelainan."
+  );
+  const [notes, setNotes] = useState(
+    "Hindari makanan mentah serta aktivitas berat."
+  );
   const [date, setDate] = useState(new Date());
   const { pickImage, URL, setURL } = useImageUploader([4, 3]);
   const { activePatient } = useActivePatient();
@@ -28,7 +32,7 @@ const Coba = ({ navigation }) => {
   const handleReg = async () => {
     if (!weight || !bloodPressure || !description || !URL || !user) {
       // console.log("no");
-      alert("Make sure all the fields are filled!")
+      alert("Make sure all the fields are filled!");
       return;
     }
     let wodeType = type;
